@@ -2,6 +2,8 @@
 
 an update of the WoW Texas Holdem addon focusing on 2.4.3 
 
+Thanks to the work of Distorted and Aero for improving on the original TBC port.
+
 
 #### Original readme:
 # WoW Texas Holdem v2.0 - Forked from Anzac Holdem
