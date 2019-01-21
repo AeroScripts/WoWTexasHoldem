@@ -1,0 +1,1787 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="WoWTexasHoldem.lua"/>
+
+	<Frame name="FHS_Seat_Template" virtual="true">
+		<Size>		<AbsDimension x="120" y="50"/>	</Size>
+		<Anchors>
+		<Anchor point="CENTER">
+			<Offset>
+			<AbsDimension x="0" y="0" />
+			
+			</Offset>
+			</Anchor>
+		</Anchors>
+
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<BackgroundInsets>			
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Scripts>
+			<OnLoad>
+				this:SetBackdropColor(0, 0, 0,128);	
+			</OnLoad>
+			<OnMouseDown>
+ 				if ( arg1 == "RightButton" ) then
+ 					FHS_PopupMenu(this:GetName());
+ 				end
+ 			</OnMouseDown>
+
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Name" inherits="GameTooltipTextSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="13"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Chips" inherits="GameTooltipTextSmall">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parent_Status" inherits="GameTooltipTextSmall" Text="">
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-11"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Port" >
+					<Size><AbsDimension x="60" y="60"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_PortWho" file="interface\addons\WoWTexasHoldem\textures\unknown" >
+					<Size><AbsDimension x="60" y="60"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="100" y="0"/>
+						</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+
+			<Layer level="BORDER">
+				<Texture name="$parent_Ring" file="interface\addons\WoWTexasHoldem\textures\ring">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="116" y="-22"/>
+						</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parent_RingSelect" file="interface\addons\WoWTexasHoldem\textures\ring_select" hidden="true">
+					<Size><AbsDimension x="128" y="128"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="116" y="-22"/>
+						</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+			
+			<Layer level="BACKGROUND">
+				<Texture name="$parent_Button" file="interface\addons\WoWTexasHoldem\textures\button" hidden="true">
+					<Size><AbsDimension x="16" y="16"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+						<Offset>
+							<AbsDimension x="-46" y="11"/>
+						</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			</Layer>
+
+
+		</Layers>
+	</Frame>
+
+	
+
+	<Frame name="FHSPokerFrame" parent="UIParent" hidden="true" movable="true" strata="TOOLTIP" >
+		<Scripts>
+			<OnLoad>
+				this:RegisterEvent("VARIABLES_LOADED");
+				this:RegisterEvent("CHAT_MSG_SAY");
+				this:RegisterEvent("CHAT_MSG_YELL");
+					
+				FHSPoker_OnLoad();
+			</OnLoad>
+			<OnEvent>
+				FHSPoker_OnEvent();
+			</OnEvent>
+    		<OnUpdate>
+	        	FHSPoker_Update(arg1);
+	      	</OnUpdate>
+			<OnMouseDown>
+ 			
+				if ( arg1 == "LeftButton" ) then
+ 					this:StartMoving();
+ 					FHS_Popup:Hide();
+				end
+ 			</OnMouseDown>
+ 			<OnMouseUp>
+ 				if ( arg1 == "LeftButton" ) then
+ 					this:StopMovingOrSizing();
+ 				end
+ 			</OnMouseUp>
+		</Scripts>
+		
+		<Size>
+			<AbsDimension x="860" y="560"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+			<Offset>
+				<AbsDimension x="0" y="0"/>
+			</Offset>
+		</Anchors>
+		
+		<Backdrop bgFile="interface\addons\WoWTexasHoldem\textures\felt" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		
+			<BackgroundInsets>
+				<!-- Just the background texture only -->
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Layers>
+			<!-- Backdrop -->
+			<Layer level="OVERLAY">
+				<Texture name="FHS_CCirc" file="interface\addons\WoWTexasHoldem\textures\circle">
+					<Size><AbsDimension x="512" y="512"/></Size>
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
+					<Anchors><Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="30" />
+					</Offset>
+					</Anchor></Anchors>
+				</Texture>
+			
+		
+			</Layer>  
+			
+			<Layer level="BACKGROUND">
+				<FontString name="FHS_Version" inherits="GameTooltipText"  text="">
+					<Anchors>
+				<Anchor point="BOTTOM" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="-242" y="34"/></Offset>
+				</Anchor>
+			</Anchors>
+				</FontString>
+			</Layer>
+	
+			<Layer level="BACKGROUND">
+				<FontString name="FHS_Feeback" inherits="GameTooltipText"  text="Feedback: Distorted @ Netherwing TBC Alliance">
+					<Anchors>
+				<Anchor point="BOTTOM" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="-266" y="22"/></Offset>
+				</Anchor>
+			</Anchors>
+				</FontString>
+			</Layer>
+			
+			<Layer level="BACKGROUND">
+				<FontString name="FHS_Strategy" inherits="GameTooltipText"  text="The creators of this addon do not endorse gambling for gold.">
+					<Anchors>
+				<Anchor point="BOTTOM" relativePoint="BOTTOM">
+					<Offset><AbsDimension x="-215" y="10"/></Offset>
+				</Anchor>
+			</Anchors>
+				</FontString>
+			</Layer>
+		
+		</Layers>	
+		
+		<Frames>
+		
+				<Button name="FHSPoker_SetSizeButton" frameStrata="HIGH" parent="FHSPokerFrame" enableMouse="true"  hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-40" y="-10"/>
+					</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="FHSPoker_MinimizeMapIcon" file="interface\addons\WoWTexasHoldem\textures\mapicon_g">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				<Layer level="BACKGROUND">
+					<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+						<Size>
+							<AbsDimension x="52" y="52"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				</Layers>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnClick>
+						
+						FHS_SizeClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+
+			<Button name="FHSPoker_Minimize" frameStrata="HIGH" parent="FHSPokerFrame" enableMouse="true"  hidden="false">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+					<Offset>
+						<AbsDimension x="-10" y="-10"/>
+					</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="FHSPoker_MinimizeMapIcon" file="interface\addons\WoWTexasHoldem\textures\mapicon">
+							<Size>
+								<AbsDimension x="32" y="32"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				<Layer level="OVERLAY">
+					<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+						<Size>
+							<AbsDimension x="52" y="52"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				</Layers>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+				<Scripts>
+					<OnClick>
+						
+						FHSPokerFrame:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+	
+
+			<Button name="FHS_Quit" inherits="OptionsButtonTemplate" text="Quit">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="370" y="10"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						FHS_Popup:Hide();
+						FHS_QuitClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="FHS_SitOutIn" inherits="OptionsButtonTemplate" text="Sit Out">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="270" y="10"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						FHS_SitOutInClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="FHS_Play" inherits="OptionsButtonTemplate" text="Play">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM">
+						<Offset><AbsDimension x="170" y="10"/></Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						FHS_Popup:Hide();
+						FHS_PlayClick();
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+
+			<Frame name="FHS_Buttons" parent="FHSPokerFrame" hidden="false" movable="true" >
+				<Size>		<AbsDimension x="380" y="60"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="0" y="-70" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+				
+
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+					<BackgroundInsets>			
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+			
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0,128);	
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<Button name="FHS_Fold" inherits="OptionsButtonTemplate" text="Fold" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="-130" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_FoldClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_Call" inherits="OptionsButtonTemplate" text="Call" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="-30" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_CallClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_AllIn" inherits="OptionsButtonTemplate" text="All In" hidden="true">
+					<Size>		<AbsDimension x="120" y="20"/>	</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="86" y="-12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_AllInClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_Raise" inherits="OptionsButtonTemplate" text="Raise" hidden="true">
+						<Size>		<AbsDimension x="120" y="20"/>	</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="86" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_RaiseClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_Raise_Lower" inherits="OptionsButtonTemplate" text="-" hidden="true">
+						<Size>		<AbsDimension x="20" y="20"/>	</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="153" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_RaiseChange(-1);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_Raise_Higher" inherits="OptionsButtonTemplate" text="+" hidden="true">
+						<Size>		<AbsDimension x="20" y="20"/>	</Size>
+						<Anchors>
+							<Anchor point="CENTER" relativePoint="CENTER">
+							<Offset><AbsDimension x="173" y="12"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_RaiseChange(1);
+							</OnClick>
+						</Scripts>
+					</Button>
+
+
+				</Frames>
+
+			</Frame>
+			
+
+
+			<Frame name="FHS_Popup" parent="FHSPokerFrame" hidden="true" movable="true" strata="">
+				<Size>		<AbsDimension x="130" y="100"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="0" y="0" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+					<BackgroundInsets>			
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0,128);	
+					</OnLoad>
+				</Scripts>
+
+				<Frames>
+					<Button name="FHS_ClearChips" inherits="OptionsButtonTemplate" text="Clear Chips">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset><AbsDimension x="0" y="30"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_Popup_ClearChipsClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_GiveChips" inherits="OptionsButtonTemplate" text="+100 Chips">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset><AbsDimension x="0" y="10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_Popup_GiveChipsClick();
+
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_BootPlayer" inherits="OptionsButtonTemplate" text="Boot">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset><AbsDimension x="0" y="-10"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_Popup_BootPlayerClick();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="FHS_PopOk" inherits="OptionsButtonTemplate" text="Ok">
+						<Anchors>
+							<Anchor point="CENTER">
+								<Offset><AbsDimension x="0" y="-30"/></Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								FHS_Popup:Hide();
+							</OnClick>
+						</Scripts>
+					</Button>
+	
+				</Frames>
+			</Frame>
+
+
+
+			<Frame name="FHS_Status" parent="FHSPokerFrame" hidden="false" movable="true">
+				<Size>		<AbsDimension x="340" y="30"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="0" y="-110" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+				
+
+				
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+					<BackgroundInsets>			
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+			
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0,128);	
+					</OnLoad>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="FHS_Status_Text" inherits="GameFontNormal"  text="">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+	
+			<Frame name="FHS_Pot" parent="FHSPokerFrame" hidden="false" movable="true">
+				<Size>		<AbsDimension x="360" y="30"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="0" y="85" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+				
+				
+				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+					<BackgroundInsets>			
+						<AbsInset left="5" right="5" top="5" bottom="5"/>
+					</BackgroundInsets>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+				</Backdrop>
+			
+				<Scripts>
+					<OnLoad>
+						this:SetBackdropColor(0, 0, 0,128);	
+					</OnLoad>
+				</Scripts>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="FHS_Pot_Text" inherits="GameTooltipText"  text="WoW Texas Hold'em">
+							<Anchors>
+								<Anchor point="CENTER">
+									<Offset>
+										<AbsDimension x="0" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<!-- SEATS -->
+
+			<Frame name="FHS_Seat_1" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="300" y="220" />
+					
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>							
+
+							
+			
+			<Frame name="FHS_Seat_2" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="360" y="90" />
+					
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+			<Frame name="FHS_Seat_3" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="360" y="-40" />
+					
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>	
+
+			<Frame name="FHS_Seat_4" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="288" y="-165" />
+					
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>		
+
+			<Frame name="FHS_Seat_5" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="100" y="-236" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+
+			<Frame name="FHS_Seat_6" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="-288" y="-165" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+
+		
+			<Frame name="FHS_Seat_7" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="-360" y="-40" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+
+		
+			<Frame name="FHS_Seat_8" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="-360" y="90" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+
+		
+			<Frame name="FHS_Seat_9" inherits="FHS_Seat_Template">
+				<Size>		<AbsDimension x="120" y="50"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="-300" y="220" />
+					</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+
+		
+			<Frame name="FHS_CardFrame" parent="FHSPokerFrame" hidden="false" movable="true" strata="TOOLTIP">
+				<Size>		<AbsDimension x="860" y="560"/>	</Size>
+				<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+					<AbsDimension x="-330" y="220" />
+					
+					</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Layers>
+					
+					
+					<Layer level="ARTWORK">
+						<!-- Club Cards -->
+						<Texture name="FHS_Card_C0" file="interface\addons\WoWTexasHoldem\textures\c0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C1" file="interface\addons\WoWTexasHoldem\textures\c1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+						<Texture name="FHS_Card_C2" file="interface\addons\WoWTexasHoldem\textures\c2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+						<Texture name="FHS_Card_C3" file="interface\addons\WoWTexasHoldem\textures\c3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C4" file="interface\addons\WoWTexasHoldem\textures\c4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C5" file="interface\addons\WoWTexasHoldem\textures\c5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C6" file="interface\addons\WoWTexasHoldem\textures\c6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C7" file="interface\addons\WoWTexasHoldem\textures\c7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C8" file="interface\addons\WoWTexasHoldem\textures\c8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C9" file="interface\addons\WoWTexasHoldem\textures\c9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C10" file="interface\addons\WoWTexasHoldem\textures\c10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C11" file="interface\addons\WoWTexasHoldem\textures\c11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C12" file="interface\addons\WoWTexasHoldem\textures\c12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					<!-- Diamonds Cards -->
+
+						<Texture name="FHS_Card_D0" file="interface\addons\WoWTexasHoldem\textures\d0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D1" file="interface\addons\WoWTexasHoldem\textures\d1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D2" file="interface\addons\WoWTexasHoldem\textures\d2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D3" file="interface\addons\WoWTexasHoldem\textures\d3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D4" file="interface\addons\WoWTexasHoldem\textures\d4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D5" file="interface\addons\WoWTexasHoldem\textures\d5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D6" file="interface\addons\WoWTexasHoldem\textures\d6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D7" file="interface\addons\WoWTexasHoldem\textures\d7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D8" file="interface\addons\WoWTexasHoldem\textures\d8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D9" file="interface\addons\WoWTexasHoldem\textures\d9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D10" file="interface\addons\WoWTexasHoldem\textures\d10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D11" file="interface\addons\WoWTexasHoldem\textures\d11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D12" file="interface\addons\WoWTexasHoldem\textures\d12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					<!-- Hearts Cards -->
+						<Texture name="FHS_Card_H0" file="interface\addons\WoWTexasHoldem\textures\h0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H1" file="interface\addons\WoWTexasHoldem\textures\h1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H2" file="interface\addons\WoWTexasHoldem\textures\h2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H3" file="interface\addons\WoWTexasHoldem\textures\h3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H4" file="interface\addons\WoWTexasHoldem\textures\h4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H5" file="interface\addons\WoWTexasHoldem\textures\h5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H6" file="interface\addons\WoWTexasHoldem\textures\h6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H7" file="interface\addons\WoWTexasHoldem\textures\h7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H8" file="interface\addons\WoWTexasHoldem\textures\h8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H9" file="interface\addons\WoWTexasHoldem\textures\h9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H10" file="interface\addons\WoWTexasHoldem\textures\h10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H11" file="interface\addons\WoWTexasHoldem\textures\h11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H12" file="interface\addons\WoWTexasHoldem\textures\h12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+					<!-- Spades Cards -->
+						<Texture name="FHS_Card_S0" file="interface\addons\WoWTexasHoldem\textures\s0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S1" file="interface\addons\WoWTexasHoldem\textures\s1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S2" file="interface\addons\WoWTexasHoldem\textures\s2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S3" file="interface\addons\WoWTexasHoldem\textures\s3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S4" file="interface\addons\WoWTexasHoldem\textures\s4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S5" file="interface\addons\WoWTexasHoldem\textures\s5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S6" file="interface\addons\WoWTexasHoldem\textures\s6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S7" file="interface\addons\WoWTexasHoldem\textures\s7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S8" file="interface\addons\WoWTexasHoldem\textures\s8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S9" file="interface\addons\WoWTexasHoldem\textures\s9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S10" file="interface\addons\WoWTexasHoldem\textures\s10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S11" file="interface\addons\WoWTexasHoldem\textures\s11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S12" file="interface\addons\WoWTexasHoldem\textures\s12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					
+		
+						<Texture name="FHS_Blank_1" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_2" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_3" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_4" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_5" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_6" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_7" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_8" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_9" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_10" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_11" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_12" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_13" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_14" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_15" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_16" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_17" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_18" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_19" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_20" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_21" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_22" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_23" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					</Layer>   
+					
+					<!-- SECOND DECK  -->
+					<!-- SECOND DECK  -->
+					<!-- SECOND DECK  -->
+					<!-- SECOND DECK  -->
+					
+					<Layer level="OVERLAY">
+						<!-- Club Cards -->
+						<Texture name="FHS_Card_C0_H" file="interface\addons\WoWTexasHoldem\textures\c0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C1_H" file="interface\addons\WoWTexasHoldem\textures\c1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+						<Texture name="FHS_Card_C2_H" file="interface\addons\WoWTexasHoldem\textures\c2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+						<Texture name="FHS_Card_C3_H" file="interface\addons\WoWTexasHoldem\textures\c3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C4_H" file="interface\addons\WoWTexasHoldem\textures\c4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C5_H" file="interface\addons\WoWTexasHoldem\textures\c5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C6_H" file="interface\addons\WoWTexasHoldem\textures\c6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C7_H" file="interface\addons\WoWTexasHoldem\textures\c7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C8_H" file="interface\addons\WoWTexasHoldem\textures\c8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C9_H" file="interface\addons\WoWTexasHoldem\textures\c9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C10_H" file="interface\addons\WoWTexasHoldem\textures\c10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C11_H" file="interface\addons\WoWTexasHoldem\textures\c11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_C12_H" file="interface\addons\WoWTexasHoldem\textures\c12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					<!-- Diamonds Cards -->
+
+						<Texture name="FHS_Card_D0_H" file="interface\addons\WoWTexasHoldem\textures\d0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D1_H" file="interface\addons\WoWTexasHoldem\textures\d1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D2_H" file="interface\addons\WoWTexasHoldem\textures\d2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D3_H" file="interface\addons\WoWTexasHoldem\textures\d3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D4_H" file="interface\addons\WoWTexasHoldem\textures\d4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D5_H" file="interface\addons\WoWTexasHoldem\textures\d5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D6_H" file="interface\addons\WoWTexasHoldem\textures\d6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D7_H" file="interface\addons\WoWTexasHoldem\textures\d7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D8_H" file="interface\addons\WoWTexasHoldem\textures\d8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D9_H" file="interface\addons\WoWTexasHoldem\textures\d9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D10_H" file="interface\addons\WoWTexasHoldem\textures\d10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D11_H" file="interface\addons\WoWTexasHoldem\textures\d11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_D12_H" file="interface\addons\WoWTexasHoldem\textures\d12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					<!-- Hearts Cards -->
+						<Texture name="FHS_Card_H0_H" file="interface\addons\WoWTexasHoldem\textures\h0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H1_H" file="interface\addons\WoWTexasHoldem\textures\h1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H2_H" file="interface\addons\WoWTexasHoldem\textures\h2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H3_H" file="interface\addons\WoWTexasHoldem\textures\h3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H4_H" file="interface\addons\WoWTexasHoldem\textures\h4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H5_H" file="interface\addons\WoWTexasHoldem\textures\h5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H6_H" file="interface\addons\WoWTexasHoldem\textures\h6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H7_H" file="interface\addons\WoWTexasHoldem\textures\h7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H8_H" file="interface\addons\WoWTexasHoldem\textures\h8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H9_H" file="interface\addons\WoWTexasHoldem\textures\h9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H10_H" file="interface\addons\WoWTexasHoldem\textures\h10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H11_H" file="interface\addons\WoWTexasHoldem\textures\h11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_H12_H" file="interface\addons\WoWTexasHoldem\textures\h12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					
+					<!-- Spades Cards -->
+						<Texture name="FHS_Card_S0_H" file="interface\addons\WoWTexasHoldem\textures\s0">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S1_H" file="interface\addons\WoWTexasHoldem\textures\s1">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S2_H" file="interface\addons\WoWTexasHoldem\textures\s2">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S3_H" file="interface\addons\WoWTexasHoldem\textures\s3">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S4_H" file="interface\addons\WoWTexasHoldem\textures\s4">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S5_H" file="interface\addons\WoWTexasHoldem\textures\s5">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S6_H" file="interface\addons\WoWTexasHoldem\textures\s6">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S7_H" file="interface\addons\WoWTexasHoldem\textures\s7">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S8_H" file="interface\addons\WoWTexasHoldem\textures\s8">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S9_H" file="interface\addons\WoWTexasHoldem\textures\s9">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S10_H" file="interface\addons\WoWTexasHoldem\textures\s10">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S11_H" file="interface\addons\WoWTexasHoldem\textures\s11">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Card_S12_H" file="interface\addons\WoWTexasHoldem\textures\s12">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+					
+		
+						<Texture name="FHS_Blank_1_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_2_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_3_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_4_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_5_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_6_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_7_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_8_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_9_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_10_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_11_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_12_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_13_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_14_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_15_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_16_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_17_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_18_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_19_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_20_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_21_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_22_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+
+						<Texture name="FHS_Blank_23_H" file="interface\addons\WoWTexasHoldem\textures\blank">
+							<Size><AbsDimension x="128" y="128"/></Size>
+							<TexCoords left="0" right="1" top="0" bottom="1"/>
+							<Anchors><Anchor point="CENTER"></Anchor></Anchors>
+						</Texture>
+					</Layer>   
+				
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+		<!-- This is borrowed partially from the Awsomely Awsome Itemrack mod -->
+	
+	<Button name="FHSPoker_MapIconFrame" frameStrata="MEDIUM" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+		<Size>
+			<AbsDimension x="32" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="-25" y="-80"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="FHSPoker_MapIcon" file="interface\addons\WoWTexasHoldem\textures\mapicon">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		<Layer level="OVERLAY">
+			<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+				<Size>
+					<AbsDimension x="52" y="52"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		</Layers>
+			<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		
+		<Scripts>
+    		<OnUpdate>
+	        	FHSPoker_MapIconUpdate(arg1);
+	      	</OnUpdate>
+
+			<OnLoad>
+				this:RegisterForClicks("LeftButtonUp","RightButtonUp");
+				this:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				FHS_Dragging(1);
+			</OnDragStart>
+			<OnDragStop>
+				FHS_Dragging(0);
+			</OnDragStop>
+			<OnClick>
+				FHS_MapIconClick(arg1);
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+</Ui>
+
+        
+
+
