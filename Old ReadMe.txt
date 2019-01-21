@@ -5,7 +5,7 @@ WoW Texas Holdem is a fully functional Texas Holdem Poker Mod that allows World 
 
 We do not suggest playing for real money, or world of warcraft gold.
 
-This version is only made possible from the help of Wet, developer of Questie.
+This version is only made possible from the help of Aero, developer of Questie.
 
 
 **************************************************

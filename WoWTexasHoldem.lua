@@ -240,7 +240,7 @@ local RoundCount=0;
 
 function _SendAddonMessage(a, b, c, d)
 	--DEFAULT_CHAT_FRAME:AddMessage("FHSDebug: SEND " .. b .. " to " .. d);
-	DEFAULT_CHAT_FRAME:AddMessage("@" .. d .. ": " .. b);
+	--DEFAULT_CHAT_FRAME:AddMessage("@" .. d .. ": " .. b);
 	if q and string.lower(UnitName("Player")) == string.lower(d) then
 		SendAddonMessage(a,b,c,d);
 	else
@@ -1594,8 +1594,8 @@ function FHS_RunEvents()
 					-- todo fix formatting
 					local pktRaw = readByte();
 					local packet = FHSCommands_reverse[pktRaw];
-					DEFAULT_CHAT_FRAME:AddMessage("PacketRaw: " .. pktRaw);
-					DEFAULT_CHAT_FRAME:AddMessage("from " .. arg2 .. ": ".. arg1.." (" .. packet .. ")");
+					--DEFAULT_CHAT_FRAME:AddMessage("PacketRaw: " .. pktRaw);
+					--DEFAULT_CHAT_FRAME:AddMessage("from " .. arg2 .. ": ".. arg1.." (" .. packet .. ")");
 				
 					--DEFAULT_CHAT_FRAME:AddMessage("Tab1: "..tab[1]);
 					--DEFAULT_CHAT_FRAME:AddMessage("Tab2: "..tab[2]);
